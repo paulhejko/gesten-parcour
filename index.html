@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1033">
+<title>Weltraum-Mission: Der Gesten-Parcours</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+<!--
+  Weltraum-Mission – Gesten-Parcours für die Grundschule (Klasse 3)
+  Optimiert für Samsung Galaxy Tab S6 Lite (Chrome / Samsung Internet), hoch- und querformat.
+  Eine einzige Datei, keine externen Quellen (kein Tracking, keine Schriftarten aus dem Netz).
+  Lehrkraft-Modus: Adresse mit  ?lehrer  am Ende aufrufen (alle Stationen offen, Überspringen-Knopf).
+  Lösungswort der Basis-Mission: WELTRAUM
+-->
+<style>
+:root{
+  --bg:#0b1033; --ink:#1d2140; --accent:#ffcc33; --accent2:#ff7a59; --ok:#34c38f; --bad:#ff5a6e;
+  --sky:#7fd3ff; --muted:#9aa0d0; --panel:rgba(255,255,255,.08); --panel2:rgba(255,255,255,.14); --r:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;touch-action:none;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body{font-family:system-ui,"SamsungOne",Roboto,"Segoe UI","Helvetica Neue",Arial,sans-serif;color:#fff;
+  background:radial-gradient(ellipse at 20% -10%,#3443a8 0%,#141a55 40%,#070a26 100%);}
+input{font:inherit;-webkit-user-select:text;user-select:text;touch-action:manipulation}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+#sky{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+#sky i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.7;animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.15}}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+
+/* ---------- Kopfzeile ---------- */
+.top{display:flex;align-items:center;gap:10px;padding:8px 14px;min-height:58px;background:rgba(0,0,0,.25);
+  border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.top .brand{font-weight:800;font-size:20px;letter-spacing:.3px;white-space:nowrap}
+.top .crew{flex:1;text-align:center;font-weight:700;font-size:17px;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ibtn{width:46px;height:46px;border-radius:14px;border:0;background:var(--panel2);font-size:22px;display:grid;place-items:center}
+.ibtn:active{transform:scale(.94)}
+.teacher-flag{background:var(--accent2);color:#fff;font-size:12px;font-weight:800;padding:3px 8px;border-radius:8px}
+main{flex:1;position:relative;min-height:0}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column}
+.scrolly{overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+
+/* ---------- allgemeine Bausteine ---------- */
+.big{border:0;border-radius:18px;padding:16px 28px;font-size:22px;font-weight:800;background:var(--accent);color:#2b2100;
+  box-shadow:0 6px 0 #c99a12;min-height:64px}
+.big:active{transform:translateY(4px);box-shadow:0 2px 0 #c99a12}
+.big.alt{background:#fff;color:var(--ink);box-shadow:0 6px 0 #aab}
+.big.green{background:var(--ok);color:#fff;box-shadow:0 6px 0 #1f8a63}
+.big.small{font-size:18px;padding:12px 20px;min-height:52px}
+.card{background:rgba(255,255,255,.95);color:var(--ink);border-radius:var(--r);box-shadow:0 12px 40px rgba(0,0,0,.35)}
+h1,h2,h3{margin:.2em 0 .4em}
+.muted{color:var(--muted)}
+
+/* ---------- Start ---------- */
+.start{align-items:center;justify-content:center;padding:20px}
+.start .card{max-width:720px;width:100%;padding:28px 30px;text-align:center}
+.start h1{font-size:34px}
+.start p{font-size:19px;line-height:1.45;margin:.4em 0}
+.names{display:flex;gap:16px;margin:18px 0 8px;flex-wrap:wrap}
+.names label{flex:1;min-width:220px;text-align:left;font-weight:700;font-size:17px}
+.names input{display:block;width:100%;margin-top:6px;padding:14px 16px;font-size:22px;border-radius:14px;border:3px solid #cfd3ef;outline:none;color:var(--ink)}
+.names input:focus{border-color:var(--accent2)}
+.rocket-hero{font-size:72px;line-height:1;display:inline-block;animation:hover 2.4s ease-in-out infinite}
+@keyframes hover{50%{transform:translateY(-10px) rotate(-4deg)}}
+.row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+/* ---------- Sternenkarte ---------- */
+.map{padding:16px 18px 40px}
+.map h2{font-size:28px;margin:4px 0 2px}
+.map .sub{font-size:18px;color:#dfe3ff;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (orientation:portrait){.grid{grid-template-columns:repeat(2,1fr)}}
+.tile{position:relative;border:0;border-radius:20px;padding:14px 10px 12px;background:var(--panel);color:#fff;text-align:center;
+  border:3px solid transparent;min-height:150px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.tile .planet{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-size:36px;
+  box-shadow:inset -10px -10px 0 rgba(0,0,0,.18),0 0 0 6px rgba(255,255,255,.06)}
+.tile .nr{font-size:14px;font-weight:800;color:var(--accent);letter-spacing:.5px}
+.tile .gname{font-size:19px;font-weight:800}
+.tile .sname{font-size:14px;color:#cfd4ff}
+.tile.locked{opacity:.38}
+.tile.next{border-color:var(--accent);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,204,51,.25)}}
+.tile.done{background:rgba(52,195,143,.18);border-color:rgba(52,195,143,.6)}
+.tile .badge{position:absolute;top:8px;right:8px;min-width:38px;height:38px;border-radius:12px;background:var(--ok);
+  font-weight:900;font-size:22px;display:grid;place-items:center;padding:0 6px}
+.tile .lock{position:absolute;top:8px;right:10px;font-size:22px}
+.wordbox{margin:22px 0 6px;padding:16px;border-radius:20px;background:var(--panel);text-align:center}
+.wordbox h3{font-size:20px;margin:0 0 10px}
+.letters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.letters span{width:48px;height:58px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;
+  font-size:30px;font-weight:900;border-bottom:4px solid rgba(255,255,255,.35)}
+.letters span.got{background:#fff;color:var(--ink);border-bottom-color:var(--accent)}
+.letters span small{font-size:11px;font-weight:700;display:block;opacity:.7}
+.final{margin-top:14px;display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap}
+.final input{width:260px;padding:14px;font-size:26px;font-weight:800;letter-spacing:4px;text-transform:uppercase;text-align:center;
+  border-radius:14px;border:3px solid #cfd3ef;color:var(--ink);outline:none}
+.profi-head{margin:26px 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.profi-head h2{margin:0}
+.stars{color:var(--accent);font-size:22px;letter-spacing:2px}
+.tile.profi .planet{border-radius:22px}
+
+/* ---------- Intro ---------- */
+.intro{align-items:center;justify-content:center;padding:16px}
+.intro .card{max-width:980px;width:100%;display:flex;gap:26px;padding:24px;align-items:center}
+@media (orientation:portrait){.intro .card{flex-direction:column;gap:12px}}
+.demo{flex:0 0 300px;max-width:100%;}
+.demo svg{width:100%;height:auto;display:block}
+.intro .kicker{font-size:15px;font-weight:800;color:#6a52d9;text-transform:uppercase;letter-spacing:.6px}
+.intro h2{font-size:32px;margin:4px 0 6px}
+.intro .story{font-size:19px;line-height:1.45;margin:0 0 12px}
+.howto{background:#fff6d6;border:3px solid #ffd85c;border-radius:16px;padding:12px 14px;font-size:20px;line-height:1.4}
+.howto b{color:#b26b00}
+.roles{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 14px;font-size:16px}
+.roles span{background:#eef0ff;border-radius:12px;padding:8px 12px}
+.speak{border:0;background:#eef0ff;color:var(--ink);border-radius:12px;padding:8px 14px;font-size:16px;font-weight:700;margin-top:10px}
+
+/* ---------- Spielfeld ---------- */
+.taskbar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.95);color:var(--ink);flex-shrink:0}
+.taskbar .who{font-weight:800;background:#ffe9a3;border-radius:12px;padding:8px 12px;white-space:nowrap;font-size:17px}
+.taskbar .task{flex:1;font-size:19px;font-weight:600;line-height:1.3}
+.taskbar .ibtn{background:#eef0ff;color:var(--ink)}
+.stage{flex:1;position:relative;overflow:hidden;touch-action:none;min-height:0}
+.counter{position:absolute;top:12px;left:14px;background:rgba(0,0,0,.35);padding:8px 14px;border-radius:14px;font-size:22px;font-weight:800;z-index:5;pointer-events:none}
+.toast{position:absolute;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;background:#fff;color:var(--ink);
+  padding:12px 20px;border-radius:16px;font-size:20px;font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.4);
+  transition:.25s;pointer-events:none;z-index:50;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:#ffe1e5}
+
+/* Tippen */
+.tgt{position:absolute;display:grid;place-items:center;border-radius:50%;line-height:1;
+  background:radial-gradient(circle,rgba(255,220,90,.35),rgba(255,220,90,0) 70%);animation:appear .3s ease-out}
+.tgt.pop{animation:pop .35s ease-in forwards}
+@keyframes appear{from{transform:scale(.2);opacity:0}}
+@keyframes pop{to{transform:scale(1.8);opacity:0}}
+/* Doppeltippen */
+.caps-row{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:4%;flex-wrap:wrap;padding:20px}
+.capsule{position:relative;width:130px;height:190px;display:flex;align-items:flex-end;justify-content:center}
+.cap-body{width:120px;height:150px;border-radius:30px 30px 24px 24px;background:linear-gradient(90deg,#9aa6d8,#e7ebff 40%,#8d97c9);
+  border:4px solid #fff;display:grid;place-items:center;font-size:48px;font-weight:900;color:#4b54a0;position:relative;z-index:2}
+.cap-lid{position:absolute;top:2px;left:50%;width:100px;height:34px;margin-left:-50px;border-radius:16px;background:#ff7a59;border:4px solid #fff;z-index:3;transition:.5s}
+.cap-food{position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:70px;opacity:0;transform:scale(.3);transition:.45s;z-index:4}
+.capsule.open .cap-lid{transform:translateY(-70px) rotate(-30deg);opacity:0}
+.capsule.open .cap-body{color:transparent;background:linear-gradient(90deg,#6fd6a8,#d8ffe9 40%,#5cc394)}
+.capsule.open .cap-food{opacity:1;transform:scale(1) translateY(-20px)}
+.wiggle{animation:wig .4s}
+@keyframes wig{25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+/* Lange drücken */
+.eng-row{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:6%;flex-wrap:wrap}
+.engine{position:relative;width:170px;height:170px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);transition:transform .15s}
+.engine svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.18);stroke-width:12}
+.ring{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round}
+.eng-label{font-size:64px;z-index:2}
+.engine.press{transform:scale(.93)}
+.engine.full{background:rgba(52,195,143,.3)}
+.engine.full .ring{stroke:var(--ok)}
+.engine .flame{position:absolute;bottom:-46px;font-size:44px;opacity:0;transition:.3s}
+.engine.full .flame{opacity:1;animation:flick .3s infinite alternate}
+@keyframes flick{to{transform:scale(1.15)}}
+/* Wischen */
+.ast-wrap{position:absolute;inset:0;display:grid;place-items:center}
+.asteroid{font-size:130px;line-height:1;transition:transform .55s ease-in,opacity .55s}
+.arrow{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;pointer-events:none}
+.arrow svg{width:100%;height:100%}
+.arrow-right{transform:translateX(150px)} .arrow-left{transform:translateX(-150px) rotate(180deg)}
+.arrow-up{transform:translateY(-150px) rotate(-90deg)} .arrow-down{transform:translateY(150px) rotate(90deg)}
+.arrow svg{animation:nudge 1s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateX(16px)}}
+.fly-right{transform:translateX(120vw) rotate(200deg)!important} .fly-left{transform:translateX(-120vw) rotate(-200deg)!important}
+.fly-up{transform:translateY(-120vh) rotate(200deg)!important} .fly-down{transform:translateY(120vh) rotate(-200deg)!important}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-14px)}40%,80%{transform:translateX(14px)}}
+/* Scrollen */
+.scrollbox{position:absolute;inset:0;overflow-y:auto;touch-action:pan-y;overscroll-behavior:contain;padding:18px 18px 40px}
+.log-head{font-size:26px;font-weight:800;text-align:center;margin:6px 0 16px}
+.log{max-width:720px;margin:0 auto 12px;background:rgba(255,255,255,.1);border-radius:16px;padding:14px 16px;font-size:20px;display:flex;gap:14px;align-items:center}
+.log .e{font-size:34px}
+.log small{display:block;font-size:13px;color:var(--muted);font-weight:700}
+.log-end{max-width:720px;margin:30px auto 10px;text-align:center;font-size:22px;font-weight:800;background:rgba(127,211,255,.15);border:3px dashed var(--sky);border-radius:20px;padding:18px}
+.alien-btn{font-size:90px;border:0;background:none;padding:0 20px;animation:hover 1.6s ease-in-out infinite}
+.more-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--accent);color:#2b2100;font-weight:800;font-size:18px;
+  padding:10px 18px;border-radius:16px;pointer-events:none;transition:opacity .3s;animation:bob 1.2s ease-in-out infinite}
+.more-hint.hide{opacity:0}
+@keyframes bob{50%{margin-bottom:-6px}}
+/* Ziehen */
+.drag-item{position:absolute;width:104px;height:104px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.5);
+  display:grid;place-items:center;font-size:64px;line-height:1;transition:left .35s,top .35s,transform .3s,opacity .3s;z-index:4}
+.drag-item.lift{transition:none;transform:scale(1.15);box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:10}
+.drag-item.board{transform:scale(.2);opacity:0}
+.drop-zone{position:absolute;border-radius:30px;border:4px dashed var(--sky);background:rgba(127,211,255,.1);display:grid;place-items:center;transition:background .2s}
+.drop-zone.hot{background:rgba(127,211,255,.35)}
+.drop-zone .rk{font-size:150px;transform:rotate(-45deg);line-height:1}
+.drop-zone .seats{position:absolute;bottom:10px;font-size:20px;font-weight:800}
+/* Zoomen */
+.zoom-layer{position:absolute;left:50%;top:50%;width:0;height:0;transform-origin:0 0}
+.tiny-planet{position:absolute;left:-40px;top:-40px;width:80px;height:80px}
+.tiny-planet .pl{font-size:70px;line-height:80px;display:block;text-align:center}
+.tiny-alien{position:absolute;left:31px;top:24px;font-size:7px;padding:5px;line-height:1;border-radius:50%}
+.tiny-alien.glow{background:rgba(127,255,170,.5);animation:pulse2 1s infinite}
+@keyframes pulse2{50%{background:rgba(127,255,170,.15)}}
+.meter{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:26px;height:60%;border-radius:14px;background:rgba(255,255,255,.15);overflow:hidden;z-index:5}
+.meter div{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(var(--accent2),var(--accent));border-radius:14px}
+.meter-l{position:absolute;right:8px;top:calc(20% - 30px);font-size:14px;font-weight:800;z-index:5}
+.lens{position:absolute;left:50%;top:50%;width:min(80vw,80vh);height:min(80vw,80vh);transform:translate(-50%,-50%);border-radius:50%;
+  border:6px solid rgba(255,255,255,.18);pointer-events:none}
+/* Nachspuren */
+.trace-svg{position:absolute;inset:0;width:100%;height:100%}
+.guide{fill:none;stroke:rgba(255,255,255,.45);stroke-width:6;stroke-dasharray:14 14;stroke-linecap:round}
+.solid{fill:none;stroke:var(--accent);stroke-width:10;stroke-linecap:round}
+.trail{fill:none;stroke:#7fd3ff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.trail.off{stroke:#ff8fa0}
+.st{fill:#fff}
+.st.lit{fill:var(--accent)}
+.st-ring{fill:none;stroke:var(--ok);stroke-width:5}
+/* Drehen */
+.dish{position:absolute;width:200px;height:200px;margin:-100px 0 0 -100px;transition:none}
+.dish svg{width:100%;height:100%;overflow:visible}
+.dish.aim .beam{stroke:var(--ok)}
+.target-pl{position:absolute;font-size:64px;width:90px;height:90px;margin:-45px 0 0 -45px;display:grid;place-items:center;border-radius:50%;
+  background:rgba(255,255,255,.08);border:3px dashed rgba(255,255,255,.4)}
+.target-pl.hit{background:rgba(52,195,143,.4);border-color:var(--ok)}
+/* Puzzle */
+.piece{position:absolute;transition:left .35s,top .35s,transform .2s;z-index:4}
+.piece.lift{transition:none;transform:scale(1.07);filter:drop-shadow(0 10px 14px rgba(0,0,0,.5));z-index:10}
+.piece.locked{z-index:2}
+.piece svg,.slot svg{width:100%;height:100%;display:block;overflow:visible}
+.slot{position:absolute}
+.launch{transition:transform 1.6s ease-in!important;transform:translateY(-130vh)!important}
+/* Kommando */
+.ufo{position:absolute;left:50%;top:55%;font-size:150px;line-height:1;transform:translate(-50%,-50%);transition:transform .45s cubic-bezier(.3,1.6,.5,1),filter .3s}
+.cmd{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#fff;color:var(--ink);padding:12px 22px;border-radius:18px;
+  font-size:24px;font-weight:800;box-shadow:0 8px 30px rgba(0,0,0,.4);text-align:center;max-width:92%;z-index:5}
+.cmd small{display:block;font-size:14px;color:#6a52d9;font-weight:800}
+
+/* ---------- Overlay / Belohnung / Urkunde ---------- */
+.overlay{position:absolute;inset:0;background:rgba(5,8,30,.75);display:grid;place-items:center;z-index:100;padding:16px}
+.overlay .card{max-width:640px;width:100%;padding:28px;text-align:center}
+.overlay h2{font-size:32px}
+.overlay p{font-size:20px;line-height:1.45}
+.bigletter{display:inline-grid;place-items:center;width:130px;height:150px;border-radius:24px;background:var(--ink);color:var(--accent);
+  font-size:100px;font-weight:900;margin:6px 0 10px;animation:appear .5s}
+.cert-wrap{align-items:center;justify-content:center;padding:14px;gap:12px}
+.cert{width:min(900px,96%);background:#fffdf4;color:var(--ink);border-radius:24px;padding:22px 26px;text-align:center;
+  border:10px double #d9a521;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.cert h1{font-size:40px;margin:0;color:#6a3fd1}
+.cert .names-l{font-size:34px;font-weight:900;margin:8px 0;color:#c2410c}
+.cert p{font-size:19px;margin:6px 0}
+.cert .gest{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.cert .gest span{background:#eef0ff;border-radius:12px;padding:6px 10px;font-size:15px;font-weight:700}
+.cert .seal{font-size:46px}
+.shot-tip{background:var(--panel2);border-radius:16px;padding:10px 16px;font-size:18px;text-align:center;max-width:900px}
+.confetti{position:fixed;top:-20px;font-size:28px;pointer-events:none;z-index:200;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<div id="app">
+  <div class="top">
+    <div class="brand">🚀 Weltraum-Mission</div>
+    <div class="crew" id="crew"></div>
+    <span class="teacher-flag" id="tflag" hidden>Lehrkraft-Modus</span>
+    <button class="ibtn" id="btnMap" title="Sternenkarte" hidden>🗺️</button>
+    <button class="ibtn" id="btnSound" title="Ton an/aus">🔊</button>
+  </div>
+  <main id="main"></main>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   Grundlagen
+   ========================================================= */
+const TEACHER = /lehrer|teacher/i.test(location.search + location.hash);
+const KEY = "weltraum-gestenparcours-v1";
+const main = document.getElementById("main");
+const $ = (s, r=document) => r.querySelector(s);
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+let state = { names:["",""], done:[], profi:[], solved:false, sound:true };
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s && Array.isArray(s.names)) state=Object.assign(state,s); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+load();
+
+/* Sterne im Hintergrund */
+(function(){ const sky=document.getElementById("sky"); for(let i=0;i<110;i++){ const s=document.createElement("i");
+  s.style.left=Math.random()*100+"%"; s.style.top=Math.random()*100+"%"; const z=Math.random()<.15?3:2; s.style.width=s.style.height=z+"px";
+  s.style.animationDelay=(Math.random()*3)+"s"; sky.appendChild(s);} })();
+
+/* Browser-Gesten abfangen (Kontextmenü, Doppeltipp-Zoom, Mehrfinger-Zoom der Seite) */
+document.addEventListener("contextmenu", e=>e.preventDefault());
+document.addEventListener("gesturestart", e=>e.preventDefault());
+document.addEventListener("dblclick", e=>e.preventDefault());
+
+/* ---------- Töne ---------- */
+let actx=null;
+function tone(freq, dur, type="sine", vol=.08, delay=0){
+  if(!state.sound) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const t=actx.currentTime+delay, o=actx.createOscillator(), g=actx.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,t); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.02);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g).connect(actx.destination); o.start(t); o.stop(t+dur+.05);
+  }catch(e){}
+}
+let dingStep=0;
+const sfx = {
+  ding(){ tone(660+ (dingStep++%8)*60, .18, "triangle"); },
+  win(){ [523,659,784,1046].forEach((f,i)=>tone(f,.25,"triangle",.09,i*.11)); },
+  err(){ tone(180,.25,"square",.04); }
+};
+const btnSound=document.getElementById("btnSound");
+function paintSound(){ btnSound.textContent = state.sound ? "🔊" : "🔇"; }
+btnSound.onclick=()=>{ state.sound=!state.sound; save(); paintSound(); };
+paintSound();
+
+/* ---------- Vorlesen ---------- */
+function speak(text){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text); u.lang="de-DE"; u.rate=.92;
+    const v=speechSynthesis.getVoices().find(v=>/^de/i.test(v.lang)); if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function stopSpeak(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------- Konfetti ---------- */
+function confetti(n=26){
+  const items=["⭐","✨","🌟","🪐","🚀","💫"];
+  for(let i=0;i<n;i++){ const c=el("div","confetti",items[i%items.length]); c.style.left=Math.random()*100+"vw";
+    c.style.animationDuration=(1.8+Math.random()*1.6)+"s"; c.style.animationDelay=(Math.random()*.5)+"s"; document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4200); }
+}
+
+/* =========================================================
+   Vormach-Animationen (SVG) für jede Geste
+   ========================================================= */
+const D = 'dur="2s" repeatCount="indefinite"';
+function demoSVG(type){
+  const frame = `<rect x="6" y="6" width="288" height="198" rx="22" fill="#1b2370" stroke="#3b4596" stroke-width="6"/>`;
+  const finger = (cx,cy)=>`<circle cx="${cx}" cy="${cy}" r="18" fill="#fff" opacity=".95"/>`;
+  let body="";
+  switch(type){
+    case "tap": body=`<text x="150" y="122" font-size="60" text-anchor="middle">⭐</text>
+      <circle cx="150" cy="105" r="18" fill="#fff"><animate attributeName="opacity" values="0;.95;.95;0;0" keyTimes="0;.15;.35;.45;1" ${D}/></circle>
+      <circle cx="150" cy="105" r="18" fill="none" stroke="#ffcc33" stroke-width="5"><animate attributeName="r" values="18;18;55;55" keyTimes="0;.2;.55;1" ${D}/><animate attributeName="opacity" values="0;1;0;0" keyTimes="0;.2;.55;1" ${D}/></circle>`; break;
+    case "double": body=`<text x="150" y="125" font-size="60" text-anchor="middle">📦</text>
+      <circle cx="150" cy="105" r="18" fill="#fff"><animate attributeName="opacity" values="0;.95;0;.95;0;0" keyTimes="0;.1;.2;.3;.4;1" ${D}/></circle>
+      <circle cx="150" cy="105" r="18" fill="none" stroke="#ffcc33" stroke-width="5"><animate attributeName="r" values="18;18;50;50" keyTimes="0;.1;.3;1" ${D}/><animate attributeName="opacity" values="0;1;0;0" keyTimes="0;.1;.3;1" ${D}/></circle>
+      <circle cx="150" cy="105" r="18" fill="none" stroke="#ffcc33" stroke-width="5"><animate attributeName="r" values="18;18;50;50" keyTimes="0;.3;.5;1" ${D}/><animate attributeName="opacity" values="0;1;0;0" keyTimes="0;.3;.5;1" ${D}/></circle>
+      <text x="230" y="60" font-size="34" font-weight="900" fill="#ffcc33" text-anchor="middle">2×</text>`; break;
+    case "long": body=`<circle cx="150" cy="105" r="48" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="10"/>
+      <circle cx="150" cy="105" r="48" fill="none" stroke="#ffcc33" stroke-width="10" stroke-dasharray="302" transform="rotate(-90 150 105)" stroke-linecap="round">
+        <animate attributeName="stroke-dashoffset" values="302;302;0;0;302" keyTimes="0;.1;.7;.9;1" ${D}/></circle>
+      <circle cx="150" cy="105" r="18" fill="#fff"><animate attributeName="opacity" values="0;.95;.95;0;0" keyTimes="0;.08;.75;.85;1" ${D}/></circle>
+      <text x="236" y="60" font-size="34" text-anchor="middle">⏱️</text>`; break;
+    case "swipe": body=`<text x="150" y="128" font-size="64" text-anchor="middle">🪨<animate attributeName="x" values="150;150;150;300;300" keyTimes="0;.3;.4;.6;1" ${D}/></text>
+      <circle cx="110" cy="150" r="18" fill="#fff"><animate attributeName="cx" values="110;110;250;250" keyTimes="0;.2;.45;1" ${D}/><animate attributeName="opacity" values="0;.95;.95;0;0" keyTimes="0;.15;.42;.5;1" ${D}/></circle>
+      <path d="M90 180 H230 m-16 -12 l16 12 l-16 12" stroke="#ffcc33" stroke-width="6" fill="none" stroke-linecap="round"/>`; break;
+    case "scroll": body=`<g><animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -70;0 -70" keyTimes="0;.15;.7;1" ${D}/>
+      ${[0,1,2,3,4,5].map(i=>`<rect x="50" y="${30+i*45}" width="200" height="32" rx="10" fill="rgba(255,255,255,.22)"/>`).join("")}</g>
+      <circle cx="150" cy="170" r="18" fill="#fff"><animate attributeName="cy" values="170;170;100;100" keyTimes="0;.15;.7;1" ${D}/><animate attributeName="opacity" values="0;.95;.95;0;0" keyTimes="0;.1;.7;.8;1" ${D}/></circle>
+      <path d="M265 160 V60 m-12 16 l12 -16 l12 16" stroke="#ffcc33" stroke-width="6" fill="none" stroke-linecap="round"/>`; break;
+    case "drag": body=`<rect x="200" y="60" width="80" height="90" rx="16" fill="none" stroke="#7fd3ff" stroke-width="4" stroke-dasharray="10 8"/>
+      <g><animateTransform attributeName="transform" type="translate" values="0 0;0 0;150 0;150 0;0 0" keyTimes="0;.25;.65;.9;1" ${D}/>
+        <text x="90" y="128" font-size="56" text-anchor="middle">🧑‍🚀</text>
+        <circle cx="90" cy="105" r="18" fill="#fff"><animate attributeName="opacity" values="0;0;.9;.9;0;0" keyTimes="0;.1;.2;.65;.72;1" ${D}/></circle></g>`; break;
+    case "pinch": body=`<text x="150" y="122" font-size="40" text-anchor="middle">🪐<animate attributeName="font-size" values="40;40;100;100;40" keyTimes="0;.15;.65;.9;1" ${D}/><animate attributeName="y" values="122;122;140;140;122" keyTimes="0;.15;.65;.9;1" ${D}/></text>
+      <circle cx="130" cy="125" r="16" fill="#fff" opacity=".95"><animate attributeName="cx" values="130;130;70;70;130" keyTimes="0;.15;.65;.9;1" ${D}/><animate attributeName="cy" values="125;125;175;175;125" keyTimes="0;.15;.65;.9;1" ${D}/></circle>
+      <circle cx="170" cy="85" r="16" fill="#fff" opacity=".95"><animate attributeName="cx" values="170;170;230;230;170" keyTimes="0;.15;.65;.9;1" ${D}/><animate attributeName="cy" values="85;85;35;35;85" keyTimes="0;.15;.65;.9;1" ${D}/></circle>`; break;
+    case "rotate": body=`<g><animateTransform attributeName="transform" type="rotate" values="0 150 105;0 150 105;120 150 105;120 150 105;0 150 105" keyTimes="0;.15;.65;.9;1" ${D}/>
+        <text x="150" y="128" font-size="64" text-anchor="middle">📡</text>
+        <circle cx="105" cy="105" r="16" fill="#fff" opacity=".95"/><circle cx="195" cy="105" r="16" fill="#fff" opacity=".95"/></g>
+      <path d="M150 30 A75 75 0 0 1 225 105" stroke="#ffcc33" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M225 105 l-14 -14 m14 14 l12 -16" stroke="#ffcc33" stroke-width="6" fill="none" stroke-linecap="round"/>`; break;
+    case "trace": body=`<path id="tp" d="M40 160 L100 70 L160 140 L220 60 L265 120" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="5" stroke-dasharray="10 9"/>
+      ${[[40,160],[100,70],[160,140],[220,60],[265,120]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="#fff"/>`).join("")}
+      <path d="M40 160 L100 70 L160 140 L220 60 L265 120" fill="none" stroke="#ffcc33" stroke-width="7" stroke-dasharray="420" stroke-linecap="round"><animate attributeName="stroke-dashoffset" values="420;420;0;0" keyTimes="0;.1;.8;1" ${D}/></path>
+      <circle r="15" fill="#fff"><animateMotion path="M40 160 L100 70 L160 140 L220 60 L265 120" keyPoints="0;0;1;1" keyTimes="0;.1;.8;1" calcMode="linear" ${D}/></circle>`; break;
+    default: body=`<text x="150" y="135" font-size="90" text-anchor="middle">🛸</text>`;
+  }
+  return `<svg viewBox="0 0 300 210" xmlns="http://www.w3.org/2000/svg">${frame}${body}</svg>`;
+}
+
+/* =========================================================
+   Stationen
+   ========================================================= */
+const STATIONS = [
+  {id:"tippen", nr:1, letter:"W", emoji:"⭐", color:"#f5b83d", gesture:"Tippen", demo:"tap", name:"Sterne sammeln",
+    story:"Unsere Rakete braucht Sternenstaub. Sammle 8 Sterne ein!",
+    how:"Tippe einmal kurz mit der Fingerspitze auf jeden Stern.", game:gameTap},
+  {id:"doppel", nr:2, letter:"E", emoji:"📦", color:"#ff7a59", gesture:"Doppeltippen", demo:"double", name:"Vorrats-Kapseln öffnen",
+    story:"Im Laderaum liegen 4 Kapseln mit Essen für die Reise. Sie gehen nur mit Doppeltippen auf.",
+    how:"Tippe zweimal schnell hintereinander auf eine Kapsel.", game:gameDouble},
+  {id:"lang", nr:3, letter:"L", emoji:"🔋", color:"#34c38f", gesture:"Lange drücken", demo:"long", name:"Triebwerke aufladen",
+    story:"Die Rakete hat 3 Triebwerke. Lade jedes Triebwerk voll auf!",
+    how:"Lege den Finger auf ein Triebwerk und lass ihn liegen, bis der Kreis ganz voll ist.", game:gameLong},
+  {id:"wischen", nr:4, letter:"T", emoji:"🪨", color:"#a78bfa", gesture:"Wischen", demo:"swipe", name:"Asteroiden wegwischen",
+    story:"Asteroiden versperren den Weg! Wische jeden Asteroiden in die Richtung, in die der Pfeil zeigt.",
+    how:"Lege den Finger auf den Bildschirm und wische schnell in Pfeilrichtung.", game:gameSwipe},
+  {id:"scrollen", nr:5, letter:"R", emoji:"📜", color:"#38bdf8", gesture:"Scrollen", demo:"scroll", name:"Funkspruch finden",
+    story:"Ein Alien hat uns einen Funkspruch geschickt. Er steht ganz unten im Logbuch.",
+    how:"Lege den Finger auf die Liste und schiebe sie langsam nach oben. So kommst du weiter nach unten.", game:gameScroll},
+  {id:"ziehen", nr:6, letter:"A", emoji:"🧑‍🚀", color:"#f472b6", gesture:"Ziehen", demo:"drag", name:"Alle einsteigen!",
+    story:"Drei Astronauten wollen mitfliegen. Bring sie in die Rakete!",
+    how:"Lege den Finger auf einen Astronauten. Halte fest und ziehe ihn in die Rakete. Dann lass los.", game:gameDrag},
+  {id:"zoomen", nr:7, letter:"U", emoji:"🔭", color:"#22c55e", gesture:"Zoomen", demo:"pinch", name:"Blick durchs Teleskop",
+    story:"Auf dem kleinen Planeten versteckt sich jemand. Zoome heran und finde ihn!",
+    how:"Lege zwei Finger auf den Bildschirm und ziehe sie auseinander. So wird alles größer.", game:gameZoom},
+  {id:"spuren", nr:8, letter:"M", emoji:"✨", color:"#eab308", gesture:"Nachspuren", demo:"trace", name:"Sternbild nachfahren",
+    story:"Fahre das Sternbild nach, dann findet die Rakete den Weg nach Hause.",
+    how:"Starte beim grünen Stern. Fahre mit dem Finger oder dem S Pen von Stern zu Stern.", game:gameTrace},
+];
+const PROFI = [
+  {id:"drehen", nr:"P1", emoji:"📡", color:"#60a5fa", gesture:"Drehen", demo:"rotate", name:"Satellit ausrichten",
+    story:"Die Antenne muss genau auf die Erde zeigen, sonst gibt es keinen Funk. Drei Mal!",
+    how:"Lege zwei Finger auf den Bildschirm und drehe sie wie einen Schlüssel, bis der Strahl auf das Ziel zeigt. Kurz stillhalten!", game:gameRotate},
+  {id:"puzzle", nr:"P2", emoji:"🧩", color:"#f97316", gesture:"Genau ziehen", demo:"drag", name:"Raketen-Puzzle",
+    story:"Unsere Ersatz-Rakete ist in Einzelteilen. Baue sie zusammen!",
+    how:"Ziehe jedes Teil genau auf seinen gestrichelten Platz.", game:gamePuzzle},
+  {id:"komet", nr:"P3", emoji:"☄️", color:"#e879f9", gesture:"Genau nachspuren", demo:"trace", name:"Kometen-Flug",
+    story:"Steuere den Kometen durch den kurvigen Tunnel bis zur Zielflagge.",
+    how:"Lege den Finger oder den S Pen auf den Kometen und fahre durch den Tunnel. Nicht an die Wand stoßen!", game:gameComet},
+  {id:"kommando", nr:"P4", emoji:"🛸", color:"#14b8a6", gesture:"Alle Gesten", demo:"mix", name:"Kommando-Zentrale",
+    story:"Die Kommando-Zentrale schickt Befehle. Kennst du alle Gesten?",
+    how:"Lies den Befehl oben und mach die passende Geste auf dem Bildschirm.", game:gameCommand},
+];
+
+/* =========================================================
+   Bildschirme
+   ========================================================= */
+let cleanup = null;
+function clear(){ if(cleanup){ try{cleanup();}catch(e){} cleanup=null; } stopSpeak(); main.innerHTML=""; }
+function nm(i){ return state.names[i] || ("Astronaut " + (i+1)); }
+function paintCrew(){
+  const c=document.getElementById("crew");
+  c.textContent = (state.names[0]||state.names[1]) ? `👩‍🚀 ${nm(0)}  &  🧑‍🚀 ${nm(1)}` : "";
+}
+const btnMap=document.getElementById("btnMap");
+btnMap.onclick=()=>showMap();
+if(TEACHER) document.getElementById("tflag").hidden=false;
+
+/* ---------- Start ---------- */
+function showStart(){
+  clear(); btnMap.hidden=true; paintCrew();
+  const has = state.names[0] || state.names[1] || state.done.length;
+  const s=el("div","screen start scrolly");
+  s.innerHTML = `<div class="card">
+    <div class="rocket-hero">🚀</div>
+    <h1>Weltraum-Mission</h1>
+    <p>Hallo, Astronauten! Unsere Rakete startet nur, wenn ihr die <b>Fingersprache des Tablets</b> könnt.</p>
+    <p>An jeder Station lernt ihr eine Geste. <b>Ihr beide</b> macht jede Station. Für jede Station bekommt ihr einen <b>Buchstaben</b>.</p>
+    ${has ? `<div class="row"><button class="big green" id="cont">▶ Weiter: ${esc(nm(0))} &amp; ${esc(nm(1))}</button></div>
+             <p class="muted" style="color:#666;font-size:16px;margin-top:16px">Ihr seid neu an diesem Tablet?</p>
+             <div class="row" style="margin-top:4px"><button class="big alt small" id="neu">Neue Mission starten</button></div>`
+          : startForm()}
+  </div>`;
+  main.appendChild(s);
+  if(has){
+    $("#cont",s).onclick=showMap;
+    $("#neu",s).onclick=(e)=>{
+      const b=e.currentTarget;
+      if(b.dataset.sure){ state.names=["",""]; state.done=[]; state.profi=[]; state.solved=false; save(); showStart(); }
+      else { b.dataset.sure="1"; b.textContent="Wirklich? Alles von vorn – noch mal tippen"; b.style.background="#ffd2d8"; }
+    };
+  } else bindForm(s);
+}
+function startForm(){
+  return `<div class="names">
+      <label>👩‍🚀 Kind 1<input id="n1" maxlength="14" autocomplete="off" placeholder="Vorname"></label>
+      <label>🧑‍🚀 Kind 2<input id="n2" maxlength="14" autocomplete="off" placeholder="Vorname"></label>
+    </div>
+    <p style="font-size:16px;color:#555">Tippe in ein Feld. Dann erscheint die Tastatur.</p>
+    <div class="row"><button class="big" id="go">Mission starten 🚀</button></div>`;
+}
+function bindForm(s){
+  $("#go",s).onclick=()=>{
+    state.names=[$("#n1",s).value.trim(), $("#n2",s).value.trim()];
+    state.done=[]; state.profi=[]; state.solved=false; save(); showMap();
+  };
+}
+
+/* ---------- Sternenkarte ---------- */
+function isUnlocked(i){ return TEACHER || i===0 || state.done.includes(STATIONS[i-1].id); }
+function showMap(){
+  clear(); btnMap.hidden=true; paintCrew();
+  const s=el("div","screen scrolly"); const m=el("div","map"); s.appendChild(m);
+  const allDone = STATIONS.every(st=>state.done.includes(st.id));
+  const nextIdx = STATIONS.findIndex(st=>!state.done.includes(st.id));
+  m.innerHTML = `<h2>🗺️ Sternenkarte</h2>
+    <p class="sub">${allDone ? "Alle Stationen geschafft! Gebt jetzt das Geheimwort ein." : "Tippe auf die leuchtende Station. Ihr macht die Stationen der Reihe nach."}</p>`;
+  const grid=el("div","grid");
+  STATIONS.forEach((st,i)=>{
+    const done=state.done.includes(st.id), open=isUnlocked(i);
+    const t=el("button","tile"+(done?" done":"")+(!open?" locked":"")+(i===nextIdx?" next":""));
+    t.innerHTML = `<div class="planet" style="background:${st.color}">${st.emoji}</div>
+      <div class="nr">STATION ${st.nr}</div><div class="gname">${st.gesture}</div><div class="sname">${st.name}</div>
+      ${done?`<div class="badge">${st.letter}</div>`:""}${!open?`<div class="lock">🔒</div>`:""}`;
+    t.onclick=()=>{ if(open) runStation(st,false); else toastGlobal("Diese Station ist noch zu. Macht erst die Station davor!"); };
+    grid.appendChild(t);
+  });
+  m.appendChild(grid);
+
+  const wb=el("div","wordbox");
+  wb.innerHTML = `<h3>🔐 Geheimwort</h3><div class="letters">${STATIONS.map(st=>
+     state.done.includes(st.id) ? `<span class="got">${st.letter}</span>` : `<span><small>${st.nr}</small></span>`).join("")}</div>`;
+  if(allDone && !state.solved){
+    const f=el("div","final");
+    f.innerHTML=`<input id="pw" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Geheimwort">
+      <button class="big green" id="pwgo">Prüfen ✓</button>`;
+    wb.appendChild(f);
+    wb.appendChild(el("p","", `<span style="font-size:16px;color:#dfe3ff">Tippt das Wort mit der Tastatur ein. Es steht auch auf eurem Arbeitsblatt.</span>`));
+  }
+  if(state.solved){
+    const f=el("div","final"); f.innerHTML=`<button class="big" id="cert">🏅 Urkunde ansehen</button>`; wb.appendChild(f);
+  }
+  m.appendChild(wb);
+
+  if(state.solved || TEACHER){
+    const ph=el("div","profi-head");
+    ph.innerHTML=`<h2>★★ Profi-Missionen</h2><span class="stars">${"★".repeat(state.profi.length)}${"☆".repeat(PROFI.length-state.profi.length)}</span>`;
+    m.appendChild(ph);
+    m.appendChild(el("p","sub","Für schnelle Teams: Diese Missionen sind schwerer. Ihr könnt sie in jeder Reihenfolge machen."));
+    const g2=el("div","grid");
+    PROFI.forEach(st=>{
+      const done=state.profi.includes(st.id);
+      const t=el("button","tile profi"+(done?" done":""));
+      t.innerHTML=`<div class="planet" style="background:${st.color}">${st.emoji}</div><div class="nr">${st.nr}</div>
+        <div class="gname">${st.gesture}</div><div class="sname">${st.name}</div>${done?`<div class="badge">★</div>`:""}`;
+      t.onclick=()=>runStation(st,true); g2.appendChild(t);
+    });
+    m.appendChild(g2);
+  } else {
+    m.appendChild(el("p","sub",`<br>★★ Nach dem Geheimwort warten noch <b>Profi-Missionen</b> auf euch.`));
+  }
+  main.appendChild(s);
+
+  const pw=$("#pw",s);
+  if(pw){
+    const check=()=>{
+      const v=pw.value.trim().toUpperCase().replace(/\s+/g,"");
+      if(v==="WELTRAUM"){ state.solved=true; save(); sfx.win(); confetti(40); pw.blur(); setTimeout(showCert,500); }
+      else { sfx.err(); pw.classList.add("shake"); setTimeout(()=>pw.classList.remove("shake"),450);
+        toastGlobal("Noch nicht richtig. Schaut euch die Buchstaben 1 bis 8 genau an."); }
+    };
+    $("#pwgo",s).onclick=check; pw.addEventListener("keydown",e=>{ if(e.key==="Enter") check(); });
+  }
+  const cb=$("#cert",s); if(cb) cb.onclick=showCert;
+  if(nextIdx>0 && !allDone){ const t=grid.children[nextIdx]; setTimeout(()=>{ try{t.scrollIntoView({block:"center",behavior:"smooth"});}catch(e){} },150); }
+}
+
+let gToastTimer=0;
+function toastGlobal(msg){
+  let t=document.getElementById("gtoast");
+  if(!t){ t=el("div","toast"); t.id="gtoast"; t.style.position="fixed"; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add("show"); clearTimeout(gToastTimer); gToastTimer=setTimeout(()=>t.classList.remove("show"),2800);
+}
+
+/* ---------- Station ablaufen lassen ---------- */
+function runStation(st, isProfi){
+  // Abwechselnd beginnen: ungerade Stationen Kind 1, gerade Stationen Kind 2
+  const idx = isProfi ? PROFI.indexOf(st) : STATIONS.indexOf(st);
+  const order = idx%2===0 ? [0,1] : [1,0];
+  let turn = 0;
+  const total = isProfi ? PROFI.length : STATIONS.length;
+
+  function intro(){
+    clear(); btnMap.hidden=false; paintCrew();
+    const me=nm(order[turn]), other=nm(order[1-turn]);
+    const s=el("div","screen intro scrolly");
+    s.innerHTML=`<div class="card">
+      <div class="demo">${demoSVG(st.demo)}</div>
+      <div>
+        <div class="kicker">${isProfi?"Profi-Mission "+st.nr:"Station "+st.nr+" von "+total} · Geste: ${st.gesture}</div>
+        <h2>${st.emoji} ${st.name}</h2>
+        <p class="story">${st.story}</p>
+        <div class="howto"><b>So geht's:</b> ${st.how}</div>
+        <button class="speak" id="sp">🔊 Vorlesen</button>
+        <div class="roles"><span>👆 <b>${esc(me)}</b> ist Tablet-Profi</span><span>📋 <b>${esc(other)}</b> ist Coach und hilft</span></div>
+        <button class="big" id="go">Los geht's, ${esc(me)}! ▶</button>
+      </div></div>`;
+    main.appendChild(s);
+    $("#sp",s).onclick=()=>speak(st.story+" So geht's: "+st.how);
+    if(!("speechSynthesis" in window)) $("#sp",s).hidden=true;
+    $("#go",s).onclick=play;
+  }
+
+  let finished=false, lastW=0, lastH=0;
+  function play(){
+    clear(); btnMap.hidden=false; finished=false;
+    const me=nm(order[turn]);
+    const s=el("div","screen");
+    s.innerHTML=`<div class="taskbar"><div class="who">👆 ${esc(me)}</div><div class="task"></div>
+       <button class="ibtn" id="help" title="Erklärung">❓</button>${TEACHER?'<button class="ibtn" id="skip" title="Überspringen">⏭</button>':""}</div>`;
+    const stage=el("div","stage"); s.appendChild(stage);
+    const toast=el("div","toast"); stage.appendChild(toast);
+    main.appendChild(s);
+    const taskEl=$(".task",s); taskEl.textContent=st.how;
+    let tt=0, lastHint=0;
+    const ctx={
+      ding:sfx.ding, err:sfx.err,
+      setTask(t){ taskEl.textContent=t; },
+      hint(msg, isErr){ const now=performance.now(); if(now-lastHint<700 && toast.textContent===msg) return; lastHint=now;
+        toast.textContent=msg; toast.classList.toggle("err",!!isErr); toast.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>toast.classList.remove("show"),2400); },
+      raise(){ stage.appendChild(toast); }
+    };
+    $("#help",s).onclick=intro;
+    if(TEACHER) $("#skip",s).onclick=()=>finish();
+    lastW=stage.clientWidth; lastH=stage.clientHeight;
+    requestAnimationFrame(()=>{
+      if(!stage.isConnected) return;
+      lastW=stage.clientWidth; lastH=stage.clientHeight;
+      const c = st.game(stage, finish, ctx);
+      ctx.raise();
+      const onResize=()=>{ // Bei Drehen des Tablets: Runde für dasselbe Kind neu aufbauen
+        if(Math.abs(stage.clientWidth-lastW)>60 || Math.abs(stage.clientHeight-lastH)>120){ play(); } };
+      let rT=0; const rr=()=>{ clearTimeout(rT); rT=setTimeout(onResize,350); };
+      window.addEventListener("resize", rr);
+      cleanup=()=>{ clearTimeout(tt); clearTimeout(rT); window.removeEventListener("resize",rr); if(typeof c==="function") c(); };
+    });
+  }
+
+  function finish(){
+    if(finished) return; finished=true;
+    sfx.win(); confetti(18);
+    const me=nm(order[turn]);
+    setTimeout(()=>{
+      if(cleanup){ try{cleanup();}catch(e){} cleanup=null; }
+      const ov=el("div","overlay");
+      if(turn===0){
+        const nx=nm(order[1]);
+        ov.innerHTML=`<div class="card"><h2>Super, ${esc(me)}! 🎉</h2>
+          <p>Jetzt tauscht ihr die Rollen.<br>Gebt das Tablet an <b>${esc(nx)}</b> weiter.</p>
+          <button class="big" id="nx">${esc(nx)} ist dran ▶</button></div>`;
+        main.appendChild(ov); $("#nx",ov).onclick=()=>{ turn=1; intro(); };
+      } else {
+        if(isProfi){ if(!state.profi.includes(st.id)) state.profi.push(st.id); }
+        else if(!state.done.includes(st.id)) state.done.push(st.id);
+        save();
+        ov.innerHTML = isProfi
+          ? `<div class="card"><h2>Profi-Mission geschafft! ★</h2><div class="bigletter" style="font-size:80px">★</div>
+             <p>Kreuzt <b>${st.nr}</b> auf eurem Arbeitsblatt an.</p><button class="big" id="bk">Zur Sternenkarte 🗺️</button></div>`
+          : `<div class="card"><h2>Station ${st.nr} geschafft! 🎉</h2><p>Euer Buchstabe:</p><div class="bigletter">${st.letter}</div>
+             <p>Schreibt das <b>${st.letter}</b> in Kästchen <b>${st.nr}</b> auf eurem Arbeitsblatt.</p><button class="big" id="bk">Zur Sternenkarte 🗺️</button></div>`;
+        main.appendChild(ov); $("#bk",ov).onclick=showMap;
+      }
+    },550);
+  }
+  intro();
+}
+
+/* ---------- Urkunde ---------- */
+function showCert(){
+  clear(); btnMap.hidden=false; paintCrew();
+  const d=new Date().toLocaleDateString("de-DE",{day:"numeric",month:"long",year:"numeric"});
+  const s=el("div","screen cert-wrap scrolly");
+  s.innerHTML=`<div class="cert">
+      <div class="seal">🏅🚀🏅</div>
+      <h1>Gesten-Diplom</h1>
+      <p>Die Astronauten</p>
+      <div class="names-l">${esc(nm(0))} &amp; ${esc(nm(1))}</div>
+      <p>haben die <b>Weltraum-Mission</b> geschafft und können diese Gesten:</p>
+      <div class="gest">${STATIONS.map(st=>`<span>${st.emoji} ${st.gesture}</span>`).join("")}</div>
+      <p>Profi-Missionen: <b style="color:#d9a521;font-size:24px">${"★".repeat(state.profi.length)}${"☆".repeat(PROFI.length-state.profi.length)}</b></p>
+      <p style="font-size:16px;color:#666">${d}</p>
+    </div>
+    <div class="shot-tip">📸 <b>Macht jetzt einen Screenshot!</b> Drückt die <b>Standby-Taste</b> und die <b>Leiser-Taste</b> gleichzeitig – nur ganz kurz.</div>
+    <div class="row" style="margin:0 0 10px"><button class="big small" id="pm">★★ Profi-Missionen</button><button class="big alt small" id="mp">🗺️ Sternenkarte</button></div>`;
+  main.appendChild(s);
+  $("#pm",s).onclick=showMap; $("#mp",s).onclick=showMap;
+}
+
+/* =========================================================
+   Hilfsfunktionen für Gesten
+   ========================================================= */
+function local(stage, e){ const r=stage.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+function svgPt(svg, e){ const p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; const m=svg.getScreenCTM(); return m? p.matrixTransform(m.inverse()) : {x:0,y:0}; }
+function distSeg(p,a,b){ const dx=b[0]-a[0], dy=b[1]-a[1]; const L=dx*dx+dy*dy||1; let t=((p.x-a[0])*dx+(p.y-a[1])*dy)/L; t=clamp(t,0,1);
+  return Math.hypot(p.x-(a[0]+t*dx), p.y-(a[1]+t*dy)); }
+const ARROW_SVG = `<svg viewBox="0 0 100 100"><path d="M10 50 H78 M58 28 L82 50 L58 72" stroke="#ffcc33" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+/* =========================================================
+   Basis-Spiele
+   ========================================================= */
+
+/* 1 – Tippen */
+function gameTap(stage, done, ctx){
+  const total=8; let n=0, alive=true, last=null;
+  const counter=el("div","counter",`⭐ 0 / ${total}`); stage.appendChild(counter);
+  function spawn(){
+    const W=stage.clientWidth, H=stage.clientHeight;
+    const size = n<4 ? 130 : (n<6 ? 105 : 85);
+    let x,y,tries=0;
+    do{ x=20+Math.random()*Math.max(10,W-size-40); y=70+Math.random()*Math.max(10,H-size-100); tries++; }
+    while(last && Math.hypot(x-last.x,y-last.y)<180 && tries<30);
+    last={x,y};
+    const b=el("div","tgt","⭐"); b.style.cssText=`width:${size}px;height:${size}px;left:${x}px;top:${y}px;font-size:${size*.75}px`;
+    b.addEventListener("pointerdown",ev=>{
+      ev.preventDefault(); if(b.dataset.hit) return; b.dataset.hit="1"; b.classList.add("pop"); n++;
+      counter.textContent=`⭐ ${n} / ${total}`; ctx.ding();
+      setTimeout(()=>{ b.remove(); if(!alive) return; if(n<total) spawn(); else done(); },330);
+    });
+    stage.appendChild(b);
+  }
+  stage.addEventListener("pointerdown",ev=>{ if(!ev.target.closest(".tgt")) ctx.hint("Daneben! Tippe genau auf den Stern."); });
+  spawn();
+  return ()=>{ alive=false; };
+}
+
+/* 2 – Doppeltippen */
+function gameDouble(stage, done, ctx){
+  const foods=shuffle(["🍎","🍕","🧃","🍪","🍌","🥨"]).slice(0,4); let opened=0; const timers=[];
+  const row=el("div","caps-row"); stage.appendChild(row);
+  foods.forEach(f=>{
+    const c=el("div","capsule",`<div class="cap-lid"></div><div class="cap-body">?</div><div class="cap-food">${f}</div>`);
+    let last=0, timer=0;
+    c.addEventListener("pointerdown",ev=>{
+      ev.preventDefault(); if(c.classList.contains("open")) return;
+      const now=performance.now();
+      if(now-last<600){ clearTimeout(timer); last=0; c.classList.add("open"); opened++; ctx.ding();
+        if(opened===foods.length) timers.push(setTimeout(done,800)); }
+      else { last=now; c.classList.remove("wiggle"); void c.offsetWidth; c.classList.add("wiggle"); clearTimeout(timer);
+        timer=setTimeout(()=>ctx.hint("Fast! Tippe zweimal ganz schnell hintereinander."),650); timers.push(timer); }
+    });
+    row.appendChild(c);
+  });
+  return ()=>timers.forEach(clearTimeout);
+}
+
+/* 3 – Lange drücken */
+function gameLong(stage, done, ctx){
+  const HOLD=1600; let charged=0; const stops=[];
+  const row=el("div","eng-row"); stage.appendChild(row);
+  for(let i=0;i<3;i++){
+    const b=el("div","engine",`<svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring" cx="60" cy="60" r="52"/></svg>
+      <div class="eng-label">🔋</div><div class="flame">🔥</div>`);
+    const ring=$(".ring",b), C=2*Math.PI*52; ring.style.strokeDasharray=C; ring.style.strokeDashoffset=C;
+    let p=0, holding=false, raf=0, last=0, full=false;
+    const frame=t=>{
+      const dt=t-last; last=t;
+      p = holding ? Math.min(1,p+dt/HOLD) : Math.max(0,p-dt/450);
+      ring.style.strokeDashoffset=C*(1-p);
+      if(p>=1 && !full){ full=true; holding=false; raf=0; b.classList.remove("press"); b.classList.add("full"); $(".eng-label",b).textContent="✅";
+        charged++; ctx.ding(); if(charged===3) setTimeout(done,900); return; }
+      raf = (holding||p>0) ? requestAnimationFrame(frame) : 0;
+    };
+    b.addEventListener("pointerdown",ev=>{ ev.preventDefault(); if(full) return; try{b.setPointerCapture(ev.pointerId);}catch(e){}
+      holding=true; b.classList.add("press"); last=performance.now(); if(!raf) raf=requestAnimationFrame(frame); });
+    const up=()=>{ if(!holding) return; holding=false; b.classList.remove("press");
+      if(!full) ctx.hint(p<.25 ? "Nicht nur tippen – lass den Finger liegen!" : "Länger festhalten, bis der Kreis voll ist!"); };
+    b.addEventListener("pointerup",up); b.addEventListener("pointercancel",up);
+    row.appendChild(b); stops.push(()=>cancelAnimationFrame(raf));
+  }
+  return ()=>stops.forEach(f=>f());
+}
+
+/* 4 – Wischen */
+function gameSwipe(stage, done, ctx){
+  const dirs=shuffle(["left","right","up","down"]); const names={left:"links",right:"rechts",up:"nach oben",down:"nach unten"};
+  let i=0, start=null, busy=false; const timers=[];
+  const counter=el("div","counter",""); stage.appendChild(counter);
+  const wrap=el("div","ast-wrap"); stage.appendChild(wrap);
+  function show(){ counter.textContent=`🪨 ${i} / 4`; busy=false;
+    wrap.innerHTML=`<div class="asteroid">🪨</div><div class="arrow arrow-${dirs[i]}">${ARROW_SVG}</div>`;
+    ctx.setTask(`Wische den Asteroiden ${names[dirs[i]]} weg!`); }
+  function evaluate(dx,dy){
+    start=null;
+    const d = Math.abs(dx)>Math.abs(dy) ? (dx>0?"right":"left") : (dy>0?"down":"up");
+    if(d===dirs[i]){ busy=true; $(".arrow",wrap).remove(); $(".asteroid",wrap).classList.add("fly-"+d); ctx.ding(); i++;
+      timers.push(setTimeout(()=>{ if(i===4){ counter.textContent="🪨 4 / 4"; done(); } else show(); },650)); }
+    else { sfx.err(); wrap.classList.remove("shake"); void wrap.offsetWidth; wrap.classList.add("shake");
+      ctx.hint(`Andere Richtung! Wische ${names[dirs[i]]}.`, true); }
+  }
+  stage.addEventListener("pointerdown",ev=>{ if(busy) return; const p=local(stage,ev); start={id:ev.pointerId,x:p.x,y:p.y}; });
+  stage.addEventListener("pointermove",ev=>{ if(!start||ev.pointerId!==start.id) return; const p=local(stage,ev);
+    const dx=p.x-start.x, dy=p.y-start.y; if(Math.hypot(dx,dy)>110) evaluate(dx,dy); });
+  const up=ev=>{ if(!start||ev.pointerId!==start.id) return; const p=local(stage,ev); const dx=p.x-start.x, dy=p.y-start.y, h=Math.hypot(dx,dy);
+    if(h>60) evaluate(dx,dy); else { start=null; ctx.hint(h<15 ? "Das war nur ein Tippen. Wische weiter!" : "Noch ein Stück weiter wischen!"); } };
+  stage.addEventListener("pointerup",up); stage.addEventListener("pointercancel",()=>start=null);
+  show();
+  return ()=>timers.forEach(clearTimeout);
+}
+
+/* 5 – Scrollen */
+function gameScroll(stage, done, ctx){
+  const facts=[
+    ["☀️","Die Sonne ist ein Stern. Sie ist der Stern, der uns am nächsten ist."],
+    ["🌍","Die Erde ist der einzige Planet, auf dem wir Leben kennen."],
+    ["🌙","Der Mond braucht ungefähr einen Monat, um einmal um die Erde zu kreisen."],
+    ["🔥","Merkur ist der Planet, der am nächsten an der Sonne ist."],
+    ["🌡️","Venus ist der heißeste Planet."],
+    ["⏳","Auf der Venus dauert ein Tag länger als ein ganzes Jahr!"],
+    ["🔴","Mars wird auch „der Rote Planet“ genannt."],
+    ["🌋","Auf dem Mars gibt es riesige Vulkane."],
+    ["🟠","Jupiter ist der größte Planet in unserem Sonnensystem."],
+    ["🪐","Saturn hat große Ringe aus Eis und Gestein."],
+    ["🧊","Uranus liegt fast auf der Seite, wenn er um die Sonne kreist."],
+    ["🔵","Neptun ist der Planet, der am weitesten von der Sonne entfernt ist."],
+    ["🛰️","Die Raumstation ISS fliegt in ungefähr 90 Minuten einmal um die Erde."],
+    ["🧑‍🚀","In der Raumstation schweben die Astronauten."],
+    ["🇩🇪","Alexander Gerst ist ein Astronaut aus Deutschland. Er war schon zweimal auf der ISS."],
+    ["👣","1969 sind zum ersten Mal Menschen auf dem Mond gelandet."],
+    ["😮‍💨","Auf dem Mond gibt es keine Luft zum Atmen."],
+    ["🤫","Im Weltraum ist es ganz still."],
+    ["💡","Das Licht der Sonne braucht ungefähr 8 Minuten bis zur Erde."],
+    ["☄️","Ein Komet hat oft einen langen, leuchtenden Schweif."],
+    ["✨","Sterne sehen klein aus, weil sie sehr, sehr weit weg sind."],
+    ["🌌","Unsere Galaxie heißt Milchstraße."],
+    ["🚀","Eine Rakete braucht sehr viel Treibstoff, um ins All zu fliegen."],
+  ];
+  const box=el("div","scrollbox");
+  box.innerHTML = `<div class="log-head">📜 Logbuch der Rakete</div>` +
+    facts.map((f,i)=>`<div class="log"><span class="e">${f[0]}</span><div><small>Eintrag ${i+1}</small>${f[1]}</div></div>`).join("") +
+    `<div class="log-end">📡 Funkspruch gefunden!<br><button class="alien-btn" id="alien">👽</button><br>Tippe das Alien an!</div>`;
+  const more=el("div","more-hint","⬇ Weiter unten geht es weiter");
+  stage.appendChild(box); stage.appendChild(more);
+  let hinted=false; const t0=setTimeout(()=>{ if(box.scrollTop<30){ hinted=true; ctx.hint("Lege den Finger auf die Liste und schiebe nach oben."); } },6000);
+  box.addEventListener("scroll",()=>{ more.classList.toggle("hide", box.scrollTop+box.clientHeight > box.scrollHeight-260); },{passive:true});
+  let got=false;
+  $("#alien",box).addEventListener("click",()=>{ if(got) return; got=true; ctx.ding(); $("#alien",box).textContent="👽👋"; ctx.setTask("Hallo Erde! Funkspruch empfangen."); setTimeout(done,900); });
+  return ()=>clearTimeout(t0);
+}
+
+/* 6 – Ziehen */
+function gameDrag(stage, done, ctx){
+  const W=stage.clientWidth, H=stage.clientHeight, portrait=H>W;
+  const R=Math.min(W,H)*.5;
+  const zone=el("div","drop-zone",`<div class="rk">🚀</div><div class="seats">0 / 3 an Bord</div>`);
+  const zx = portrait ? (W-R)/2 : W*.62-R/2, zy = portrait ? H*.08 : (H-R)/2;
+  zone.style.cssText=`left:${zx}px;top:${zy}px;width:${R}px;height:${R}px`; stage.appendChild(zone);
+  const people=shuffle(["🧑‍🚀","👩‍🚀","👨‍🚀"]);
+  let n=0;
+  people.forEach((p,i)=>{
+    const it=el("div","drag-item",p);
+    const hx = portrait ? W*(.2+.3*i)-52 : W*.14-52 + (i%2)*40, hy = portrait ? H*.78-52 : H*(.2+.3*i)-52;
+    it.style.left=hx+"px"; it.style.top=hy+"px";
+    let off=null;
+    it.addEventListener("pointerdown",ev=>{ ev.preventDefault(); try{it.setPointerCapture(ev.pointerId);}catch(e){}
+      const q=local(stage,ev); off={x:q.x-parseFloat(it.style.left), y:q.y-parseFloat(it.style.top), id:ev.pointerId}; it.classList.add("lift"); });
+    it.addEventListener("pointermove",ev=>{ if(!off||ev.pointerId!==off.id) return; const q=local(stage,ev);
+      it.style.left=(q.x-off.x)+"px"; it.style.top=(q.y-off.y)+"px";
+      zone.classList.toggle("hot", inside()); });
+    const inside=()=>{ const cx=parseFloat(it.style.left)+52, cy=parseFloat(it.style.top)+52;
+      return cx>zx-25 && cx<zx+R+25 && cy>zy-25 && cy<zy+R+25; };
+    const up=ev=>{ if(!off||ev.pointerId!==off.id) return; off=null; it.classList.remove("lift"); zone.classList.remove("hot");
+      if(inside()){ it.style.left=(zx+R/2-52)+"px"; it.style.top=(zy+R/2-52)+"px"; it.classList.add("board"); n++; ctx.ding();
+        $(".seats",zone).textContent=`${n} / 3 an Bord`; setTimeout(()=>it.remove(),400); if(n===3) setTimeout(done,700); }
+      else { it.style.left=hx+"px"; it.style.top=hy+"px"; ctx.hint("Festhalten und ganz bis in die Rakete ziehen!"); } };
+    it.addEventListener("pointerup",up); it.addEventListener("pointercancel",up);
+    stage.appendChild(it);
+  });
+}
+
+/* 7 – Zoomen */
+function gameZoom(stage, done, ctx){
+  stage.appendChild(el("div","lens"));
+  const layer=el("div","zoom-layer",`<div class="tiny-planet"><span class="pl">🪐</span><span class="tiny-alien">👽</span></div>`);
+  stage.appendChild(layer);
+  const meter=el("div","meter","<div></div>"); stage.appendChild(meter); stage.appendChild(el("div","meter-l","🔍"));
+  const fill=$("div",meter), alien=$(".tiny-alien",layer);
+  let scale=1, phase=1, found=false;
+  const pts=new Map(); let startD=0, startS=1, tap=null, oneHint=0;
+  ctx.setTask("Ziehe zwei Finger auseinander: Mach den Planeten groß!");
+  function apply(){ layer.style.transform=`scale(${scale})`; fill.style.height=((scale-1)/7*100)+"%";
+    if(phase===1 && !found && scale>=4){ found=true; alien.classList.add("glow"); ctx.ding(); ctx.setTask("Da ist jemand! Tippe das Alien mit einem Finger an."); }
+    if(phase===2 && scale<=1.3){ phase=3; ctx.ding(); ctx.setTask("Super! Du kannst groß und klein zoomen."); setTimeout(done,600); } }
+  const dist=()=>{ const a=[...pts.values()]; return Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y)||1; };
+  stage.addEventListener("pointerdown",ev=>{ ev.preventDefault(); pts.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+    if(pts.size===2){ startD=dist(); startS=scale; tap=null; }
+    else if(pts.size===1){ tap={id:ev.pointerId,x:ev.clientX,y:ev.clientY,onAlien:!!ev.target.closest(".tiny-alien")}; } });
+  stage.addEventListener("pointermove",ev=>{ if(!pts.has(ev.pointerId)) return; pts.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+    if(pts.size>=2 && startD){ scale=clamp(startS*dist()/startD,1,8); apply(); }
+    else if(pts.size===1 && tap && Math.hypot(ev.clientX-tap.x,ev.clientY-tap.y)>50){ tap=null; const n=performance.now();
+      if(n-oneHint>2500){ oneHint=n; ctx.hint("Nimm zwei Finger!"); } } });
+  const up=ev=>{
+    if(tap && tap.id===ev.pointerId && pts.size===1){
+      if(phase===1 && found && tap.onAlien){ phase=2; ctx.ding(); alien.textContent="👽👋"; alien.classList.remove("glow");
+        ctx.setTask("Gefunden! Jetzt schiebe zwei Finger zusammen: Mach alles wieder klein."); }
+      else if(phase===1 && found){ ctx.hint("Tippe genau auf das kleine Alien."); }
+    }
+    pts.delete(ev.pointerId); if(pts.size<2) startD=0; if(pts.size===2){ startD=dist(); startS=scale; } tap=null; };
+  stage.addEventListener("pointerup",up); stage.addEventListener("pointercancel",up);
+  stage.addEventListener("wheel",ev=>{ ev.preventDefault(); scale=clamp(scale*(1-ev.deltaY*.0015),1,8); apply(); },{passive:false});
+  apply();
+}
+
+/* 8 – Nachspuren (Großer Wagen) */
+function gameTrace(stage, done, ctx){
+  const P=[[110,170],[250,135],[370,180],[490,245],[505,405],[730,440],[770,270],[490,245]];
+  const NS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(NS,"svg"); svg.setAttribute("viewBox","0 0 880 560"); svg.setAttribute("class","trace-svg");
+  svg.innerHTML=`<polyline class="guide" points="${P.map(p=>p.join(",")).join(" ")}"/><g id="solid"></g><polyline class="trail" id="trail" points=""/>
+    ${P.slice(0,7).map((p,i)=>`<circle class="st" data-i="${i}" cx="${p[0]}" cy="${p[1]}" r="16"/>`).join("")}
+    <circle class="st-ring" id="ring" cx="${P[0][0]}" cy="${P[0][1]}" r="30"><animate attributeName="r" values="26;38;26" dur="1.2s" repeatCount="indefinite"/></circle>
+    <text id="cap" x="440" y="535" font-size="34" font-weight="800" fill="#ffcc33" text-anchor="middle"></text>`;
+  stage.appendChild(svg);
+  const trail=$("#trail",svg), solid=$("#solid",svg), ring=$("#ring",svg);
+  let next=0, down=false, pts=[], lastOff=0;
+  function light(i){ const c=svg.querySelector(`.st[data-i="${i}"]`); if(c) c.classList.add("lit"); }
+  function reach(){
+    light(next===7?3:next);
+    if(next>0){ const l=document.createElementNS(NS,"line"); l.setAttribute("class","solid");
+      l.setAttribute("x1",P[next-1][0]); l.setAttribute("y1",P[next-1][1]); l.setAttribute("x2",P[next][0]); l.setAttribute("y2",P[next][1]); solid.appendChild(l); }
+    ctx.ding(); next++;
+    if(next===P.length){ ring.remove(); $("#cap",svg).textContent="Das ist der Große Wagen – ein echtes Sternbild!"; down=false; setTimeout(done,1300); return; }
+    ring.setAttribute("cx",P[next][0]); ring.setAttribute("cy",P[next][1]); ring.style.stroke="#ffcc33";
+  }
+  function check(p){
+    if(next>=P.length) return;
+    if(Math.hypot(p.x-P[next][0],p.y-P[next][1])<42){ reach(); return; }
+    if(next>0){ const off=distSeg(p,P[next-1],P[next])>75; trail.classList.toggle("off",off);
+      const n=performance.now(); if(off && n-lastOff>2500){ lastOff=n; ctx.hint("Bleib auf der gestrichelten Linie!"); } }
+  }
+  svg.addEventListener("pointerdown",ev=>{ ev.preventDefault(); if(next>=P.length) return; try{svg.setPointerCapture(ev.pointerId);}catch(e){}
+    down=true; const p=svgPt(svg,ev); pts.push(`${p.x.toFixed(0)},${p.y.toFixed(0)}`); trail.setAttribute("points",pts.join(" "));
+    if(next===0 && Math.hypot(p.x-P[0][0],p.y-P[0][1])>42) ctx.hint("Starte beim grünen Kreis!"); check(p); });
+  svg.addEventListener("pointermove",ev=>{ if(!down) return; const p=svgPt(svg,ev); pts.push(`${p.x.toFixed(0)},${p.y.toFixed(0)}`);
+    if(pts.length>600) pts.splice(0,100); trail.setAttribute("points",pts.join(" ")); check(p); });
+  const up=()=>{ down=false; pts=[]; trail.setAttribute("points",""); trail.classList.remove("off"); };
+  svg.addEventListener("pointerup",up); svg.addEventListener("pointercancel",up);
+}
+
+/* =========================================================
+   Profi-Spiele
+   ========================================================= */
+
+/* P1 – Drehen */
+function gameRotate(stage, done, ctx){
+  const W=stage.clientWidth, H=stage.clientHeight, cx=W/2, cy=H/2, R=Math.min(W,H)*.38;
+  const dish=el("div","dish",`<svg viewBox="0 0 200 200">
+      <line class="beam" x1="100" y1="100" x2="100" y2="${100-R*1.05}" stroke="#ffcc33" stroke-width="8" stroke-dasharray="14 10" stroke-linecap="round"/>
+      <circle cx="100" cy="100" r="62" fill="#dfe6ff" stroke="#fff" stroke-width="6"/>
+      <path d="M50 110 Q100 30 150 110 Z" fill="#9aa6d8" stroke="#fff" stroke-width="5"/>
+      <line x1="100" y1="100" x2="100" y2="40" stroke="#fff" stroke-width="7"/><circle cx="100" cy="36" r="10" fill="#ff7a59"/>
+    </svg>`);
+  dish.style.left=cx+"px"; dish.style.top=cy+"px"; stage.appendChild(dish);
+  const counter=el("div","counter","🌍 0 / 3"); stage.appendChild(counter);
+  let rot=0, k=0, aimSince=0; const targets=[];
+  let a0=Math.random()*360; for(let i=0;i<3;i++){ a0=(a0+90+Math.random()*90)%360; targets.push(a0); }
+  const tp=el("div","target-pl","🌍"); stage.appendChild(tp);
+  function placeTarget(){ const a=targets[k]*Math.PI/180; tp.style.left=(cx+R*Math.sin(a))+"px"; tp.style.top=(cy-R*Math.cos(a))+"px"; tp.classList.remove("hit"); }
+  const norm=a=>((a%360)+540)%360-180;
+  function apply(){ dish.style.transform=`rotate(${rot}deg)`;
+    if(k>=3) return;
+    const ok=Math.abs(norm(rot-targets[k]))<9; dish.classList.toggle("aim",ok);
+    const now=performance.now();
+    if(ok){ if(!aimSince) aimSince=now; else if(now-aimSince>450){ aimSince=0; tp.classList.add("hit"); ctx.ding(); k++; counter.textContent=`🌍 ${k} / 3`;
+      if(k===3){ ctx.setTask("Funkverbindung steht! 📡"); setTimeout(done,700); } else setTimeout(placeTarget,600); } }
+    else aimSince=0; }
+  const pts=new Map(); let sA=0, sR=0, single=0;
+  const ang=()=>{ const a=[...pts.values()]; return Math.atan2(a[1].y-a[0].y, a[1].x-a[0].x)*180/Math.PI; };
+  stage.addEventListener("pointerdown",ev=>{ ev.preventDefault(); pts.set(ev.pointerId,{x:ev.clientX,y:ev.clientY}); if(pts.size===2){ sA=ang(); sR=rot; } });
+  stage.addEventListener("pointermove",ev=>{ if(!pts.has(ev.pointerId)) return; pts.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+    if(pts.size>=2){ rot=sR+norm(ang()-sA); apply(); }
+    else { const n=performance.now(); if(n-single>3000){ single=n; ctx.hint("Nimm zwei Finger und drehe sie wie einen Schlüssel."); } } });
+  const up=ev=>{ pts.delete(ev.pointerId); if(pts.size===2){ sA=ang(); sR=rot; } };
+  stage.addEventListener("pointerup",up); stage.addEventListener("pointercancel",up);
+  stage.addEventListener("wheel",ev=>{ ev.preventDefault(); rot+=ev.deltaY*.15; apply(); },{passive:false});
+  // Prüfung auch ohne Bewegung (Stillhalten)
+  const iv=setInterval(()=>{ if(pts.size>=2) apply(); },120);
+  placeTarget(); apply();
+  return ()=>clearInterval(iv);
+}
+
+/* P2 – Raketen-Puzzle */
+function gamePuzzle(stage, done, ctx){
+  const W=stage.clientWidth, H=stage.clientHeight, portrait=H>W;
+  const u=portrait ? Math.min(W/560, (H-40)/560) : Math.min(W/760, H/560);
+  const shapes={
+    nose:{w:120,h:100,svg:(s)=>`<path d="M60 4 L114 96 H6 Z" ${s}/>`, fill:"#ff6b6b"},
+    body:{w:120,h:170,svg:(s)=>`<rect x="4" y="4" width="112" height="162" rx="10" ${s}/><circle cx="60" cy="70" r="26" fill="#7fd3ff" stroke="#fff" stroke-width="6"/>`, fill:"#e8ecff"},
+    fins:{w:220,h:90,svg:(s)=>`<path d="M54 4 H166 L216 86 H4 Z" ${s}/>`, fill:"#a78bfa"},
+    flame:{w:90,h:100,svg:(s)=>`<path d="M45 4 C80 40 86 70 45 96 C4 70 10 40 45 4 Z" ${s}/><path d="M45 34 C60 54 60 70 45 84 C30 70 30 54 45 34Z" fill="#ffe066"/>`, fill:"#ff9f43"},
+  };
+  const order=["nose","body","fins","flame"];
+  const totalH=(100+170+90+100);
+  const sx = W*.7, sy0 = (H-totalH*u)/2;
+  const slots={}; let y=sy0;
+  order.forEach(id=>{ const s=shapes[id]; slots[id]={x:sx-s.w*u/2, y, w:s.w*u, h:s.h*u}; y+=s.h*u; });
+  const rocketG=el("div",""); rocketG.style.cssText="position:absolute;inset:0;pointer-events:none"; stage.appendChild(rocketG);
+  order.forEach(id=>{ const s=shapes[id], sl=slots[id]; const d=el("div","slot",`<svg viewBox="0 0 ${s.w} ${s.h}">${s.svg('fill="rgba(255,255,255,.06)" stroke="#7fd3ff" stroke-width="4" stroke-dasharray="10 8"')}</svg>`);
+    d.style.cssText=`left:${sl.x}px;top:${sl.y}px;width:${sl.w}px;height:${sl.h}px`; stage.appendChild(d); });
+  // Ablageplätze links: Hochformat = eine Spalte, Querformat = 2 × 2
+  const mixed=shuffle(order), homes={}; let hy0=Math.max(10,(H-(totalH*u+60))/2);
+  mixed.forEach((id,i)=>{ const s=shapes[id];
+    if(portrait){ homes[id]=[W*.05, hy0]; hy0+=s.h*u+20; }
+    else { const col=i%2, rowY = i<2 ? H*.08 : H*.08+190*u+30; homes[id]=[W*.04+col*(240*u+30), rowY]; } });
+  let placed=0;
+  mixed.forEach((id,i)=>{
+    const s=shapes[id], sl=slots[id];
+    const pc=el("div","piece",`<svg viewBox="0 0 ${s.w} ${s.h}">${s.svg(`fill="${s.fill}" stroke="#fff" stroke-width="5"`)}</svg>`);
+    const hx=Math.min(homes[id][0], W-sl.w-6), hy=Math.min(homes[id][1], H-sl.h-6);
+    pc.style.cssText=`left:${hx}px;top:${hy}px;width:${sl.w}px;height:${sl.h}px`;
+    let off=null, locked=false;
+    pc.addEventListener("pointerdown",ev=>{ ev.preventDefault(); if(locked) return; try{pc.setPointerCapture(ev.pointerId);}catch(e){}
+      const q=local(stage,ev); off={id:ev.pointerId,x:q.x-parseFloat(pc.style.left),y:q.y-parseFloat(pc.style.top)}; pc.classList.add("lift"); });
+    pc.addEventListener("pointermove",ev=>{ if(!off||ev.pointerId!==off.id) return; const q=local(stage,ev);
+      pc.style.left=(q.x-off.x)+"px"; pc.style.top=(q.y-off.y)+"px"; });
+    const up=ev=>{ if(!off||ev.pointerId!==off.id) return; off=null; pc.classList.remove("lift");
+      const cx=parseFloat(pc.style.left)+sl.w/2, cy=parseFloat(pc.style.top)+sl.h/2;
+      let best=null, bd=1e9; order.forEach(o=>{ const t=slots[o]; const d=Math.hypot(cx-(t.x+t.w/2), cy-(t.y+t.h/2)); if(d<bd){bd=d;best=o;} });
+      const tol=Math.max(30, Math.min(sl.w,sl.h)*.4);
+      if(best===id && bd<tol){ locked=true; pc.classList.add("locked"); pc.style.left=sl.x+"px"; pc.style.top=sl.y+"px"; ctx.ding(); placed++;
+        rocketG.appendChild(pc);
+        if(placed===4){ ctx.setTask("3 … 2 … 1 … Start! 🚀"); setTimeout(()=>{ rocketG.style.zIndex=20; rocketG.querySelectorAll(".piece").forEach(p=>p.classList.add("launch")); },500); setTimeout(done,2000); } }
+      else if(bd<tol*1.6){ sfx.err(); pc.style.left=hx+"px"; pc.style.top=hy+"px"; ctx.hint("Dieses Teil gehört an einen anderen Platz.", true); }
+      else { pc.style.left=hx+"px"; pc.style.top=hy+"px"; ctx.hint("Ziehe das Teil genau auf den gestrichelten Platz."); } };
+    pc.addEventListener("pointerup",up); pc.addEventListener("pointercancel",up);
+    stage.appendChild(pc);
+  });
+}
+
+/* P3 – Kometen-Flug */
+function gameComet(stage, done, ctx){
+  const NS="http://www.w3.org/2000/svg";
+  const portrait=stage.clientHeight>stage.clientWidth;
+  const vb = portrait ? "0 0 600 900" : "0 0 1000 560";
+  const d = portrait ? "M90 830 C 90 640, 510 700, 500 520 S 90 420, 110 260 S 480 160, 510 70"
+                     : "M70 470 C 230 470, 210 110, 380 110 S 560 460, 700 420 S 880 150, 940 100";
+  const svg=document.createElementNS(NS,"svg"); svg.setAttribute("viewBox",vb); svg.setAttribute("class","trace-svg");
+  svg.innerHTML=`<path d="${d}" fill="none" stroke="#7fd3ff" stroke-opacity=".5" stroke-width="122" stroke-linecap="round"/>
+    <path d="${d}" fill="none" stroke="#141a55" stroke-width="108" stroke-linecap="round"/>
+    <path id="mid" d="${d}" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="4" stroke-dasharray="10 12"/>
+    <path id="done" d="${d}" fill="none" stroke="#ffcc33" stroke-opacity=".5" stroke-width="16" stroke-linecap="round"/>
+    <g id="flag"></g><g id="comet"><circle r="40" fill="rgba(255,204,51,.25)"/><text y="20" font-size="56" text-anchor="middle">☄️</text></g>`;
+  stage.appendChild(svg);
+  const mid=$("#mid",svg), comet=$("#comet",svg), doneP=$("#done",svg);
+  const L=mid.getTotalLength(), N=320, S=[]; for(let i=0;i<=N;i++){ const p=mid.getPointAtLength(L*i/N); S.push([p.x,p.y]); }
+  doneP.style.strokeDasharray=L; doneP.style.strokeDashoffset=L;
+  const end=S[N]; $("#flag",svg).innerHTML=`<text x="${end[0]}" y="${end[1]+18}" font-size="52" text-anchor="middle">🏁</text>`;
+  let idx=0, drag=false;
+  function put(x,y){ comet.setAttribute("transform",`translate(${x},${y})`); }
+  function reset(){ idx=0; put(S[0][0],S[0][1]); doneP.style.strokeDashoffset=L; }
+  reset();
+  svg.addEventListener("pointerdown",ev=>{ ev.preventDefault(); const p=svgPt(svg,ev);
+    if(Math.hypot(p.x-S[idx][0],p.y-S[idx][1])<75){ drag=true; try{svg.setPointerCapture(ev.pointerId);}catch(e){} }
+    else ctx.hint("Lege den Finger genau auf den Kometen ☄️"); });
+  svg.addEventListener("pointermove",ev=>{ if(!drag) return; const p=svgPt(svg,ev);
+    let best=idx, bd=1e9; for(let i=Math.max(0,idx-15); i<=Math.min(N,idx+35); i++){ const dd=Math.hypot(p.x-S[i][0],p.y-S[i][1]); if(dd<bd){bd=dd;best=i;} }
+    if(bd>56){ drag=false; sfx.err(); ctx.hint("Bumm! An die Wand gestoßen. Zurück zum Start.", true); stage.classList.remove("shake"); void stage.offsetWidth; stage.classList.add("shake"); reset(); return; }
+    idx=best; put(p.x,p.y); doneP.style.strokeDashoffset=L*(1-idx/N);
+    if(idx>=N-4){ drag=false; put(end[0],end[1]); ctx.ding(); ctx.setTask("Ziel erreicht! 🏁"); setTimeout(done,500); } });
+  const up=()=>{ if(drag){ drag=false; put(S[idx][0],S[idx][1]); } };
+  svg.addEventListener("pointerup",up); svg.addEventListener("pointercancel",up);
+}
+
+/* P4 – Kommando-Zentrale (Gesten-Erkennung) */
+function gameCommand(stage, done, ctx){
+  const C={
+    tap:["Tippe einmal auf den Bildschirm.","Tippen"],
+    double:["Tippe zweimal schnell hintereinander.","Doppeltippen"],
+    long:["Halte den Finger auf dem Ufo, bis es leuchtet.","Lange drücken"],
+    left:["Wische nach links.","Wischen nach links"], right:["Wische nach rechts.","Wischen nach rechts"],
+    up:["Wische nach oben.","Wischen nach oben"], down:["Wische nach unten.","Wischen nach unten"],
+    pinchout:["Mach das Ufo mit zwei Fingern größer.","Zwei Finger auseinander"],
+    pinchin:["Mach das Ufo mit zwei Fingern kleiner.","Zwei Finger zusammen"],
+    rotate:["Dreh das Ufo mit zwei Fingern.","Drehen"],
+  };
+  const list=shuffle(Object.keys(C)).slice(0,8);
+  let k=0, pause=false;
+  const cmd=el("div","cmd",""); const ufo=el("div","ufo","🛸"); stage.appendChild(ufo); stage.appendChild(cmd);
+  function show(){ cmd.innerHTML=`<small>BEFEHL ${k+1} VON ${list.length}</small>${C[list[k]][0]}`; ctx.setTask("Lies den Befehl und mach die passende Geste."); pause=false; }
+  const anim={ tap:"translate(-50%,-50%) translateY(-30px)", double:"translate(-50%,-50%) rotate(360deg)", long:"translate(-50%,-50%) scale(1.1)",
+    left:"translate(-50%,-50%) translateX(-200px)", right:"translate(-50%,-50%) translateX(200px)", up:"translate(-50%,-50%) translateY(-160px)",
+    down:"translate(-50%,-50%) translateY(140px)", pinchout:"translate(-50%,-50%) scale(1.7)", pinchin:"translate(-50%,-50%) scale(.5)", rotate:"translate(-50%,-50%) rotate(-90deg)" };
+  function react(g){ ufo.style.transform=anim[g]; if(g==="long") ufo.style.filter="drop-shadow(0 0 30px #7fffaa)";
+    setTimeout(()=>{ ufo.style.transform=""; ufo.style.filter=""; },650); }
+  function emit(g){
+    if(pause) return; react(g);
+    if(g===list[k]){ pause=true; ctx.ding(); k++; cmd.innerHTML=`✅ Richtig: ${C[g][1]}!`;
+      setTimeout(()=>{ if(k===list.length){ cmd.innerHTML="🏆 Alle Befehle geschafft!"; done(); } else show(); },1000); }
+    else { sfx.err(); ctx.hint(`Das war: ${C[g][1]}. Gesucht ist: ${C[list[k]][1]}.`, true); }
+  }
+  // --- Gesten erkennen ---
+  const pts=new Map(); let st=null, multi=null, longT=0, pendTap=0, consumed=false;
+  const ang=a=>Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)*180/Math.PI;
+  stage.addEventListener("pointerdown",ev=>{ ev.preventDefault(); pts.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+    if(pts.size===1){
+      if(pendTap){ clearTimeout(pendTap); pendTap=0; consumed=true; emit("double"); st=null; return; }
+      consumed=false; st={x:ev.clientX,y:ev.clientY,t:performance.now()};
+      longT=setTimeout(()=>{ if(pts.size===1 && st && !consumed){ consumed=true; emit("long"); } },750);
+    } else if(pts.size===2){ clearTimeout(longT); const a=[...pts.values()];
+      multi={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1, a:ang(a), fired:false}; st=null; }
+  });
+  stage.addEventListener("pointermove",ev=>{ if(!pts.has(ev.pointerId)) return; pts.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+    if(pts.size>=2 && multi && !multi.fired){ const a=[...pts.values()]; const s=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)/multi.d;
+      let r=ang(a)-multi.a; r=((r%360)+540)%360-180;
+      if(Math.abs(r)>35){ multi.fired=true; emit("rotate"); } else if(s>1.45){ multi.fired=true; emit("pinchout"); } else if(s<.65){ multi.fired=true; emit("pinchin"); } }
+    else if(st && Math.hypot(ev.clientX-st.x,ev.clientY-st.y)>25) clearTimeout(longT);
+  });
+  const up=ev=>{ const p=pts.get(ev.pointerId); pts.delete(ev.pointerId); clearTimeout(longT);
+    if(pts.size>0) return;
+    if(multi){ multi=null; consumed=false; return; }
+    if(consumed || !st || !p){ consumed=false; st=null; return; }
+    const dx=ev.clientX-st.x, dy=ev.clientY-st.y, h=Math.hypot(dx,dy), dur=performance.now()-st.t; st=null;
+    if(h>70){ emit(Math.abs(dx)>Math.abs(dy) ? (dx>0?"right":"left") : (dy>0?"down":"up")); }
+    else if(h<30 && dur<600){ pendTap=setTimeout(()=>{ pendTap=0; emit("tap"); },380); }
+  };
+  stage.addEventListener("pointerup",up); stage.addEventListener("pointercancel",ev=>{ pts.delete(ev.pointerId); clearTimeout(longT); multi=null; st=null; });
+  show();
+  return ()=>{ clearTimeout(longT); clearTimeout(pendTap); };
+}
+
+/* ---------- Los geht's ---------- */
+showStart();
+})();
+</script>
+</body>
+</html>
